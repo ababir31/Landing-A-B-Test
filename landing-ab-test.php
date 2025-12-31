@@ -4,7 +4,7 @@
  * Description: A/B testing tool for a single landing page: assign visitors to v1/v2 and keep them there until you stop the campaign.
  * Version: 1.0.0
  * Author: Abir, Rasel
- * Author URI: https://profiles.wordpress.org/ababir/, https://profiles.wordpress.org/rsiddiqe/
+ * Author URI: https://github.com/ababir31/Landing-A-B-Test
  * License: GPLv2 or later
  */
 
@@ -456,3 +456,4 @@ public function add_settings_page() {
 }
 
 new Landing_AB_Test_Plugin();
+

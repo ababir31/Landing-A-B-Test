@@ -54,7 +54,7 @@ private function get_client_ip() {
                 // '103.102.166.1' => Bangladesh 
                 // '203.0.113.25' => Example Asia IP (test range)
                 if (in_array($ip, ['127.0.0.1', '::1'], true)) {
-                    return '203.0.113.25'; // change this to test different countries
+                    return '127.0.0.1'; // change this to test different countries
                 }
                 return $ip;
             }
@@ -613,3 +613,4 @@ private function get_client_ip() {
 }
 
 new Landing_AB_Test_Plugin();
+

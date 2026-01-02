@@ -142,11 +142,15 @@ class Landing_AB_Test_Plugin {
             'variant_b_countries'  => isset($input['variant_b_countries']) && is_array($input['variant_b_countries']) ? array_map('sanitize_text_field', $input['variant_b_countries']) : [],
         ];
 
+        if ($output['original_page_id'] == -1) {
+            $output['original_page_id'] = 0;
+        }
+
         if (!in_array($output['redirection_method'], ['random', 'geo'], true)) {
             $output['redirection_method'] = 'random';
         }
 
-        foreach (['original_page_id', 'variant_a_page_id', 'variant_b_page_id'] as $key) {
+        foreach (['variant_a_page_id', 'variant_b_page_id'] as $key) {
             if ($output[$key] > 0) {
                 $post = get_post($output[$key]);
                 if (!$post || $post->post_type !== 'page' || $post->post_status !== 'publish') {
@@ -157,7 +161,7 @@ class Landing_AB_Test_Plugin {
 
         if ($output['campaign_active']) {
             $ids = [$output['original_page_id'], $output['variant_a_page_id'], $output['variant_b_page_id']];
-            $valid    = ($ids[0] > 0 && $ids[1] > 0 && $ids[2] > 0);
+            $valid    = ($ids[0] >= 0 && $ids[1] > 0 && $ids[2] > 0);
             $distinct = (count(array_unique($ids)) === 3);
             if (!$valid || !$distinct) {
                 $output['campaign_active'] = 0;
@@ -258,7 +262,8 @@ class Landing_AB_Test_Plugin {
                         <th scope="row"><label for="original_page_id">Original page</label></th>
                         <td>
                             <select id="original_page_id" name="original_page_id" required>
-                                <option value="0">— Select —</option>
+                                <option value="-1">— Select —</option>
+                                <option value="0" <?php selected($options['original_page_id'], 0); ?>>Home Page (<?php echo esc_url(home_url('/')); ?>)</option>
                                 <?php foreach ($pages as $p): ?>
                                     <option value="<?php echo esc_attr($p->ID); ?>" <?php selected($options['original_page_id'], $p->ID); ?>>
                                         <?php echo esc_html($p->post_title . ' (' . get_permalink($p) . ')'); ?>
@@ -392,11 +397,11 @@ class Landing_AB_Test_Plugin {
         $original_id = intval($options['original_page_id']);
         $variant_a   = intval($options['variant_a_page_id']);
         $variant_b   = intval($options['variant_b_page_id']);
-        if (!$original_id || !$variant_a || !$variant_b) {
+        if ($original_id < 0 || $variant_a <= 0 || $variant_b <= 0) {
             return;
         }
 
-        if (!is_page($original_id)) {
+        if (!is_page($original_id) && !($original_id == 0 && is_front_page())) {
             return;
         }
 
@@ -572,7 +577,10 @@ class Landing_AB_Test_Plugin {
 
     private function label_for_page($id) {
         $id = intval($id);
-        if ($id <= 0) return '—';
+        if ($id < 0) return '—';
+        if ($id == 0) {
+            return 'Home Page (' . home_url('/') . ')';
+        }
         $url = get_permalink($id);
         $title = get_the_title($id);
         if (!$url || !$title) return '—';

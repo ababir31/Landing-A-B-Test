@@ -31,8 +31,10 @@ class Landing_AB_Test_Plugin {
 private function get_client_ip() {
     // Common server headers that may contain the client IP
     $keys = [
-        'HTTP_CLIENT_IP',
+        'HTTP_CF_CONNECTING_IP', // Cloudflare
+        'HTTP_X_REAL_IP',        // nginx
         'HTTP_X_FORWARDED_FOR',
+        'HTTP_CLIENT_IP',
         'HTTP_X_FORWARDED',
         'HTTP_FORWARDED_FOR',
         'HTTP_FORWARDED',

@@ -3,7 +3,7 @@
  * Plugin Name: Landing A/B Test
  * Description: A/B testing tool for a single landing page: Random sticky assignment or Geo Location (country-based) redirection.
  * Version: 1.1.0
- * Author: Abir, Rasle
+ * Author: Abir, Rasel
  * Author URI: https://profiles.wordpress.org/ababir/
  * License: GPLv2 or later
  */
@@ -615,5 +615,6 @@ class Landing_AB_Test_Plugin {
 }
 
 new Landing_AB_Test_Plugin();
+
 
 

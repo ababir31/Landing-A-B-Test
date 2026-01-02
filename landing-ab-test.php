@@ -28,44 +28,44 @@ class Landing_AB_Test_Plugin {
  * Remove commenting before testing.
  */
     
-// private function get_client_ip() {
-//     // Common server headers that may contain the client IP
-//     $keys = [
-//         'HTTP_CLIENT_IP',
-//         'HTTP_X_FORWARDED_FOR',
-//         'HTTP_X_FORWARDED',
-//         'HTTP_FORWARDED_FOR',
-//         'HTTP_FORWARDED',
-//         'REMOTE_ADDR',
-//     ];
+private function get_client_ip() {
+    // Common server headers that may contain the client IP
+    $keys = [
+        'HTTP_CLIENT_IP',
+        'HTTP_X_FORWARDED_FOR',
+        'HTTP_X_FORWARDED',
+        'HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED',
+        'REMOTE_ADDR',
+    ];
 
-//     foreach ($keys as $k) {
-//         if (!empty($_SERVER[$k])) {
-//             $ip = $_SERVER[$k];
-//             // X-Forwarded-For can contain a list of IPs
-//             if ($k === 'HTTP_X_FORWARDED_FOR') {
-//                 $parts = explode(',', $ip);
-//                 $ip = trim($parts[0]);
-//             }
-//             if (filter_var($ip, FILTER_VALIDATE_IP)) {
-//                 // If running locally, override with a test IP for easier testing
-//                 // Pick any IP from another country for testing
-//                 // Examples:
-//                 // '8.8.8.8' => United States (Google DNS)
-//                 // '81.105.122.102' => United Kingdom
-//                 // '103.102.166.1' => Bangladesh 
-//                 // '203.0.113.25' => Example Asia IP (test range)
-//                 if (in_array($ip, ['127.0.0.1', '::1'], true)) {
-//                     return '127.0.0.1'; // change this to test different countries
-//                 }
-//                 return $ip;
-//             }
-//         }
-//     }
+    foreach ($keys as $k) {
+        if (!empty($_SERVER[$k])) {
+            $ip = $_SERVER[$k];
+            // X-Forwarded-For can contain a list of IPs
+            if ($k === 'HTTP_X_FORWARDED_FOR') {
+                $parts = explode(',', $ip);
+                $ip = trim($parts[0]);
+            }
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                // If running locally, override with a test IP for easier testing
+                // Pick any IP from another country for testing
+                // Examples:
+                // '8.8.8.8' => United States (Google DNS)
+                // '81.105.122.102' => United Kingdom
+                // '103.102.166.1' => Bangladesh 
+                // '203.0.113.25' => Example Asia IP (test range)
+                if (in_array($ip, ['127.0.0.1', '::1'], true)) {
+                    return '127.0.0.1'; // change this to test different countries
+                }
+                return $ip;
+            }
+        }
+    }
 
-//     // Fallback to loopback when nothing else works
-//     return '127.0.0.1';
-// }
+    // Fallback to loopback when nothing else works
+    return '127.0.0.1';
+}
 
 
     const OPTION_GROUP   = 'landing_ab_test_options_group';
@@ -405,6 +405,11 @@ class Landing_AB_Test_Plugin {
             return;
         }
 
+        // Prevent redirect loop: do not redirect if already on a variant page
+        if (is_page($variant_a) || is_page($variant_b)) {
+            return;
+        }
+
         $method = $options['redirection_method'];
 
         if ($method === 'random') {
@@ -623,6 +628,5 @@ class Landing_AB_Test_Plugin {
 }
 
 new Landing_AB_Test_Plugin();
-
 
 
